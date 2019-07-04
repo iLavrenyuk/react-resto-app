@@ -7,7 +7,6 @@ const initialState = {
 }
 
 let massCart = [];
-let massTotal = [];
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
@@ -25,7 +24,7 @@ const reducer = (state = initialState, action) => {
                 loading: true,
                 error: false
             };
-        case 'MENU_ERROR':
+        case 'ERR_CONNECTION_REFUSED':
             return {
                 ...state,
                 menu: state.menu,
@@ -53,22 +52,19 @@ const reducer = (state = initialState, action) => {
                 qty: quantityItems.length
             };
 
-            massTotal.push(newItem.price);
-
             return {
                 ...state,
                 items: [
                     ...state.items,
                     newItem
                 ],
-                total: eval(massTotal.join('+'))
+                total: state.total + newItem.price
             };
         case 'ITEM_REMOVE_FROM_CART':
             const idx = action.payload;
             const itemIndex = state.items.findIndex(item => item.id === idx);
 
             massCart.splice(itemIndex, 1);
-            massTotal.splice(itemIndex, 1);
 
             return {
                 ...state,
@@ -76,7 +72,7 @@ const reducer = (state = initialState, action) => {
                     ...state.items.slice(0, itemIndex),
                     ...state.items.slice(itemIndex + 1)
                 ],
-                total: eval(massTotal.join('+'))
+                total: state.total - state.items[itemIndex].price
             }
         default:
             return state;
